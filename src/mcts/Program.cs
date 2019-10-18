@@ -7,8 +7,26 @@ namespace mcts
     {
         static void Main(string[] args)
         {
-            IsTerminalTests();
-            PlayGame();
+            DebuggingTests();
+            //IsTerminalTests();
+            //PlayGame();
+        }
+
+        static void DebuggingTests()
+        {
+            {
+                var moves = new[] { 0, 4, 1, 2 };
+                var state = new TicTacToe();
+                foreach(var move in moves)
+                {
+                    state = state.ApplyMove(move);
+                }
+                for(int i = 0; i < 10; i++)
+                {
+                    MonteCarloTreeSearch.Search(state, 1000);
+                    Console.WriteLine("------");
+                }
+            }
         }
 
         static void IsTerminalTests()
@@ -58,7 +76,8 @@ namespace mcts
         {
             IGame state = new TicTacToe();
             var player1 = new ConsolePlayer() { Name = "Player 1" };
-            var player2 = new ConsolePlayer() { Name = "Player 2" };
+            //var player1 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 1" };
+            var player2 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 2" };
             var playerLookup = new Dictionary<PlayerId, IPlayer>() 
             {
                 { PlayerId.Player1, player1 },

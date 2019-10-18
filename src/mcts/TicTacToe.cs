@@ -6,12 +6,14 @@ namespace mcts
     {
         public PlayerId[] Board { get; private set; }
         public PlayerId CurrentPlayersTurn { get; private set; }
+        public PlayerId LastPlayersTurn { get; private set; }
         public PlayerId Winner { get; private set; }
 
         public TicTacToe()
         {
             Board = new PlayerId[9];
             CurrentPlayersTurn = PlayerId.Player1;
+            LastPlayersTurn = PlayerId.None;
             Winner = PlayerId.None;
         }
 
@@ -20,6 +22,7 @@ namespace mcts
             var nextState = new TicTacToe
             {
                 Board = this.Board.ToArray(),
+                LastPlayersTurn = CurrentPlayersTurn,
             };
             nextState.Board[cellNumber] = CurrentPlayersTurn;
             nextState.Winner = DetermineWinner(nextState.Board);
@@ -77,6 +80,41 @@ namespace mcts
         {
             winningPlayerNumber = Winner;
             return CurrentPlayersTurn == PlayerId.None;
+        }
+
+        // it's not safe to cache the hash code, but we're going to anyway or this is going to be really slow
+        private int _hashCode = -1;
+        public override int GetHashCode()
+        {
+            if (_hashCode == -1)
+            {
+                _hashCode = 0;
+                for(int i = 0; i < Board.Length; i++)
+                {
+                    _hashCode *= 3;
+                    _hashCode += (int)Board[i];
+                }
+            }
+            return _hashCode;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (object.ReferenceEquals(obj, null)) return false;
+            if (object.ReferenceEquals(obj, this)) return true;
+            return this.GetHashCode() == obj.GetHashCode();
+        }
+
+        public static bool operator ==(TicTacToe a, TicTacToe b)
+        {
+            if (object.ReferenceEquals(a, null)) return false;
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TicTacToe a, TicTacToe b)
+        {
+            if (object.ReferenceEquals(a, null)) return false;
+            return !a.Equals(b);
         }
     }
 }

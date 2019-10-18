@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/mcts/bin/Debug/netcoreapp2.2/mcts.dll",
+            "program": "${workspaceFolder}/src/mcts/bin/Debug/netcoreapp3.0/mcts.exe",
             "args": [],
             "cwd": "${workspaceFolder}/src/mcts",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

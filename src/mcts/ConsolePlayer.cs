@@ -11,12 +11,12 @@ namespace mcts
 
         public IGame MakeMove(IGame currentState, IGame[] successors)
         {
-            Console.WriteLine("Current State: ");
+            Console.WriteLine($"Current State ({currentState.GetHashCode()}): ");
             Console.WriteLine(GetBoardRepresentation((dynamic)currentState));
             Console.WriteLine("Please select a successor:");
             for(int i = 0; i < successors.Length; i++)
             {
-                Console.WriteLine(i + ":");
+                Console.WriteLine($"{i} ({successors[i].GetHashCode()}):");
                 Console.WriteLine(GetBoardRepresentation((dynamic)successors[i]));
             }
             int selection = -1;

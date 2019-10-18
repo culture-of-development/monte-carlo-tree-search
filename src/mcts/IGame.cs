@@ -6,5 +6,6 @@ namespace mcts
         IGame[] ExpandSuccessors();
         bool IsTerminal(out PlayerId winningPlayerNumber);
         PlayerId CurrentPlayersTurn { get; }
+        PlayerId LastPlayersTurn { get; }
     }
 }
