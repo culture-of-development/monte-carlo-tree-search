@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace mcts
@@ -11,20 +12,27 @@ namespace mcts
 
         // NOTE: assumes IGame is immutable
         // TODO: alternatively pass in an allotment of time instead of number of simulations
-        public static IGame Search(IGame current, int numberOfSimulations)
+        public static IGame Search(IGame current, int millisecondsToMove)
         {
             var tree = new TreeSearch(current);
-            for(int i = 0; i < numberOfSimulations; i++)
+            var stopwatch = Stopwatch.StartNew();
+            for(long i = 0; ; i++)
             {
+                if (i % 1000 == 0)
+                {
+                    if (stopwatch.ElapsedMilliseconds > millisecondsToMove) break;
+                }
                 tree.PerformMonteCarloRound(current);
             }
             var successors = current.ExpandSuccessors();
             double mostSimulations = -1d;
+            double currentSimulations = tree.states[current].SimiulationsCount;
+            Console.WriteLine("currentSimulations: " + currentSimulations);
             var bestScoreStates = new List<IGame>();
             foreach(var successor in successors)
             {
                 var stats = tree.states[successor];
-                Console.WriteLine($"{successor.GetHashCode()}: {stats.Wins}, {stats.SimiulationsCount}");
+                Console.WriteLine($"{successor.GetHashCode()}: {stats.Wins}, {stats.SimiulationsCount}\n     {stats.UpperConfidenceBoundScore(currentSimulations)}, {stats.PureMonteCarloScore}");
                 if (stats.SimiulationsCount > mostSimulations)
                 {
                     bestScoreStates.Clear();
@@ -69,9 +77,11 @@ namespace mcts
                 while(!state.IsTerminal(out PlayerId dummy))
                 {
                     var successors = state.ExpandSuccessors();
+                    var parentSimulations = states[state].SimiulationsCount;
                     if (successors.Any(m => !states.ContainsKey(m))) break;
                     state = successors
-                        .OrderByDescending(m => states[m].PureMonteCarloScore)
+                        //.OrderByDescending(m => states[m].PureMonteCarloScore)
+                        .OrderByDescending(m => states[m].UpperConfidenceBoundScore(parentSimulations))
                         .First();
                     path.Add(state);
                 }
@@ -130,7 +140,12 @@ namespace mcts
             public double SimiulationsCount { get; set; }
             public double Wins { get; set; }
 
+            static readonly double c = Math.Sqrt(2);
+
             public double PureMonteCarloScore => SimiulationsCount == 0 ? 1d : Wins / SimiulationsCount;
+            public double UpperConfidenceBoundScore(double parentSimulations) => 
+                SimiulationsCount == 0 ? 1d :
+                PureMonteCarloScore + c * Math.Sqrt(Math.Log(parentSimulations) / SimiulationsCount);
         }
     }
 }

@@ -2,19 +2,19 @@ namespace mcts
 {
     public class MonteCarloTreeSearchPlayer : IPlayer
     {
-        private int numRollouts;
+        private int millisecondsToMove;
 
         public string Name { get; set; }
 
-        public MonteCarloTreeSearchPlayer(int numRollouts)
+        public MonteCarloTreeSearchPlayer(int millisecondsToMove)
         {
-            this.numRollouts = numRollouts;
+            this.millisecondsToMove = millisecondsToMove;
         }
 
         public IGame MakeMove(IGame currentState, IGame[] successors)
         {
             // TODO: ideally we verify that the result is in the successors
-            return MonteCarloTreeSearch.Search(currentState, numRollouts);
+            return MonteCarloTreeSearch.Search(currentState, millisecondsToMove);
         }
     }
 }

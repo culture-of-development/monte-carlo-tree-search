@@ -7,9 +7,9 @@ namespace mcts
     {
         static void Main(string[] args)
         {
-            DebuggingTests();
+            //DebuggingTests();
             //IsTerminalTests();
-            //PlayGame();
+            PlayGame();
         }
 
         static void DebuggingTests()
@@ -77,7 +77,7 @@ namespace mcts
             IGame state = new TicTacToe();
             var player1 = new ConsolePlayer() { Name = "Player 1" };
             //var player1 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 1" };
-            var player2 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 2" };
+            var player2 = new MonteCarloTreeSearchPlayer(500) { Name = "Player 2" };
             var playerLookup = new Dictionary<PlayerId, IPlayer>() 
             {
                 { PlayerId.Player1, player1 },

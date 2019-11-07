@@ -41,7 +41,7 @@ namespace mcts
                 { PlayerId.Player1, "X" },
                 { PlayerId.Player2, "O" },
             };
-            var board = state.Board;
+            var board = state.GetBoard();
             string result = "";
             for(int i = 0; i < 3; i++)
             {
