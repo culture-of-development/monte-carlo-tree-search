@@ -17,7 +17,7 @@ namespace mcts
             for(int i = 0; i < successors.Length; i++)
             {
                 Console.WriteLine($"{i} ({successors[i].GetHashCode()}):");
-                Console.WriteLine(GetBoardRepresentation((dynamic)successors[i]));
+                //Console.WriteLine(GetBoardRepresentation((dynamic)successors[i]));
             }
             int selection = -1;
             while(selection < 0 || selection >= successors.Length)
@@ -52,6 +52,29 @@ namespace mcts
                 }
                 result += "\n";
                 if (i < 2) result += "-+-+-\n";
+            }
+            return result;
+        }
+
+        public static string GetBoardRepresentation(Reversi state)
+        {
+            Dictionary<PlayerId, string> rep = new Dictionary<PlayerId, string>()
+            {
+                { PlayerId.None, " " },
+                { PlayerId.Player1, "X" },
+                { PlayerId.Player2, "O" },
+            };
+            var board = state.GetBoard();
+            string result = "";
+            for(int i = 0; i < 8; i++)
+            {
+                result += rep[board[i * 8]];
+                for(int j = 1; j < 8; j++)
+                {
+                    result += "|" + rep[board[i * 8 + j]];
+                }
+                result += "\n";
+                if (i < 7) result += "-+-+-+-+-+-+-+-\n";
             }
             return result;
         }

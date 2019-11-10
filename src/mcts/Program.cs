@@ -74,7 +74,7 @@ namespace mcts
 
         static void PlayGame()
         {
-            IGame state = new TicTacToe();
+            IGame state = new Reversi();
             var player1 = new ConsolePlayer() { Name = "Player 1" };
             //var player1 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 1" };
             var player2 = new MonteCarloTreeSearchPlayer(500) { Name = "Player 2" };
