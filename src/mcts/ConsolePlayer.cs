@@ -11,13 +11,10 @@ namespace mcts
 
         public IGame MakeMove(IGame currentState, IGame[] successors)
         {
-            Console.WriteLine($"Current State ({currentState.GetHashCode()}): ");
-            Console.WriteLine(GetBoardRepresentation((dynamic)currentState));
             Console.WriteLine("Please select a successor:");
             for(int i = 0; i < successors.Length; i++)
             {
-                Console.WriteLine($"{i} ({successors[i].GetHashCode()}):");
-                //Console.WriteLine(GetBoardRepresentation((dynamic)successors[i]));
+                Console.WriteLine($"{i}: ({successors[i].DescribeLastMove()})");
             }
             int selection = -1;
             while(selection < 0 || selection >= successors.Length)
@@ -61,20 +58,28 @@ namespace mcts
             Dictionary<PlayerId, string> rep = new Dictionary<PlayerId, string>()
             {
                 { PlayerId.None, " " },
-                { PlayerId.Player1, "X" },
-                { PlayerId.Player2, "O" },
+                { PlayerId.Player1, " X" },
+                { PlayerId.Player2, " O" },
             };
             var board = state.GetBoard();
             string result = "";
             for(int i = 0; i < 8; i++)
             {
-                result += rep[board[i * 8]];
+                var player = board[i * 8];
+                if (player == PlayerId.None)
+                    result += (i * 8).ToString().PadLeft(2);
+                else
+                    result += rep[board[i * 8]];
                 for(int j = 1; j < 8; j++)
                 {
-                    result += "|" + rep[board[i * 8 + j]];
+                    player = board[i * 8 + j];
+                    if (player == PlayerId.None)
+                        result += "|" + (i * 8 + j).ToString().PadLeft(2);
+                    else
+                        result += "|" + rep[board[i * 8 + j]];
                 }
                 result += "\n";
-                if (i < 7) result += "-+-+-+-+-+-+-+-\n";
+                if (i < 7) result += "--+--+--+--+--+--+--+--\n";
             }
             return result;
         }

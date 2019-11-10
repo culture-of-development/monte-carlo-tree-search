@@ -9,6 +9,7 @@ namespace mcts
         {
             //DebuggingTests();
             //IsTerminalTests();
+            //new ReversiTests().RunTests();
             PlayGame();
         }
 
@@ -77,7 +78,7 @@ namespace mcts
             IGame state = new Reversi();
             var player1 = new ConsolePlayer() { Name = "Player 1" };
             //var player1 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 1" };
-            var player2 = new MonteCarloTreeSearchPlayer(500) { Name = "Player 2" };
+            var player2 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 2" };
             var playerLookup = new Dictionary<PlayerId, IPlayer>() 
             {
                 { PlayerId.Player1, player1 },
@@ -86,6 +87,8 @@ namespace mcts
             PlayerId winner;
             while(!state.IsTerminal(out winner))
             {
+                Console.WriteLine($"Current State");
+                Console.WriteLine(ConsolePlayer.GetBoardRepresentation((dynamic)state));
                 var currentPlayer = playerLookup[state.CurrentPlayersTurn];
                 state = currentPlayer.MakeMove(state, state.ExpandSuccessors());
             }

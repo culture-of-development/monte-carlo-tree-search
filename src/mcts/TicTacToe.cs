@@ -9,6 +9,9 @@ namespace mcts
         public PlayerId Winner { get; private set; }
 
         private int pieces;
+        private int lastMove = 0;
+        public string DescribeLastMove() => lastMove.ToString();
+
 
         public TicTacToe()
         {

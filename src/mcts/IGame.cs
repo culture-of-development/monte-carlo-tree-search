@@ -7,5 +7,6 @@ namespace mcts
         bool IsTerminal(out PlayerId winningPlayerNumber);
         PlayerId CurrentPlayersTurn { get; }
         PlayerId LastPlayersTurn { get; }
+        string DescribeLastMove();
     }
 }

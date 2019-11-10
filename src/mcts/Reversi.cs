@@ -11,9 +11,11 @@ namespace mcts
 
     public class Reversi : IGame
     {
-        private ulong player1Pieces;
-        private ulong player2Pieces;
-        private short skips;
+        public ulong player1Pieces;
+        public ulong player2Pieces;
+        public short skips;
+        public ulong lastMove = 0ul;
+        public string DescribeLastMove() => BitOperations.TrailingZeroCount(lastMove).ToString();
 
         public PlayerId CurrentPlayersTurn { get; private set; }
         public PlayerId LastPlayersTurn { get; private set; }
@@ -44,7 +46,7 @@ namespace mcts
             return successors;
         }
 
-        private ulong GetValidMoves()
+        public ulong GetValidMoves()
         {
             ulong openCells = ~(player1Pieces | player2Pieces);
             ulong validMoves = 0ul;
@@ -60,7 +62,7 @@ namespace mcts
             return validMoves;
         }
 
-        private bool IsValidMove(ulong location)
+        public bool IsValidMove(ulong location)
         {
             // TODO: consider that it is valid to skip when no move is possible
             // can you quickly check when no move is possible?
@@ -72,149 +74,44 @@ namespace mcts
             return isValid;
         }
 
-        private ulong Captures(ulong currentPieces, ulong opponentPieces, ulong location)
+        public ulong Captures(ulong currentPieces, ulong opponentPieces, ulong location)
         {
             // from our current location, we can move in any direction
             // as long as we continually encounter opponent pieces
             // we capture them all as long as the first non opponent piece contains a current player piece
             ulong captures = 0ul;
-
-            // look up
-            ulong current = location;
-            ulong visited = 0;
-            do
-            {
-                current <<= 8;
-                visited |= current;
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            // look down
-            current = location;
-            visited = 0;
-            do
-            {
-                current >>= 8;
-                visited |= current;
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            // 0  1  2  3
-            // 4  5  6  7
-            // 8  9 10 11
-            //12 13 14 15
-
-            // look left
-            ulong row_mask = (location >> (BitOperations.LeadingZeroCount(location) % 8)) * 255;
-            current = location;
-            visited = 0;
-            do
-            {
-                current >>= 1;
-                current &= row_mask;
-                visited |= current;
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            // look left
-            current = location;
-            visited = 0;
-            do
-            {
-                current <<= 1;
-                current &= row_mask;
-                visited |= current;
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            int loc_index = BitOperations.LeadingZeroCount(location);
-            int row, col;
-            
-            // look up right
-            row = loc_index / 8;
-            col = loc_index % 8;
-            current = location;
-            visited = 0;
-            do
-            {
-                row--;
-                if (row < 0) break;
-                col++;
-                if (col >= 8) break;
-                visited |= 1ul << (row * 8 + col);
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            // look up left
-            row = loc_index / 8;
-            col = loc_index % 8;
-            current = location;
-            visited = 0;
-            do
-            {
-                row--;
-                if (row < 0) break;
-                col--;
-                if (col < 0) break;
-                visited |= 1ul << (row * 8 + col);
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            // look down left
-            row = loc_index / 8;
-            col = loc_index % 8;
-            current = location;
-            visited = 0;
-            do
-            {
-                row++;
-                if (row >= 8) break;
-                col--;
-                if (col < 0) break;
-                visited |= 1ul << (row * 8 + col);
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
-            // look down right
-            row = loc_index / 8;
-            col = loc_index % 8;
-            current = location;
-            visited = 0;
-            do
-            {
-                row++;
-                if (row >= 8) break;
-                col++;
-                if (col >= 8) break;
-                visited |= 1ul << (row * 8 + col);
-            } while (HasFlags(opponentPieces, current));
-            if (HasFlags(currentPieces, current))
-            {
-                captures |= visited;
-            }
-
+            captures |= Look(currentPieces, opponentPieces, location, -1,  0); // up
+            captures |= Look(currentPieces, opponentPieces, location,  1,  0); // down
+            captures |= Look(currentPieces, opponentPieces, location,  0, -1); // left
+            captures |= Look(currentPieces, opponentPieces, location,  0,  1); // right
+            captures |= Look(currentPieces, opponentPieces, location, -1, -1); // up left
+            captures |= Look(currentPieces, opponentPieces, location, -1,  1); // up right
+            captures |= Look(currentPieces, opponentPieces, location,  1, -1); // down left
+            captures |= Look(currentPieces, opponentPieces, location,  1,  1); // down right
             return captures;
+        }
+
+        public ulong Look(ulong currentPieces, ulong opponentPieces, ulong location, int rowShift, int colShift)
+        {
+            int loc_index = BitOperations.TrailingZeroCount(location);
+            int row = loc_index / 8 + rowShift;
+            if (row < 0 || row >= 8) return 0ul;
+            int col = loc_index % 8 + colShift;
+            if (col < 0 || col >= 8) return 0ul;
+            ulong current = 1ul << (row * 8 + col);
+            ulong visited = 0;
+            while (HasFlags(opponentPieces, current))
+            {
+                visited |= current;
+                row += rowShift;
+                col += colShift;
+                if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+                    current = 0ul;
+                    break;
+                }
+                current = 1ul << (row * 8 + col);
+            }
+            return HasFlags(currentPieces, current) ? visited : 0ul;
         }
 
         public Reversi ApplyMove(ulong location)
@@ -224,6 +121,7 @@ namespace mcts
                 player1Pieces = player1Pieces,
                 player2Pieces = player2Pieces,
                 skips = skips,
+                lastMove = location,
                 LastPlayersTurn = CurrentPlayersTurn,
                 CurrentPlayersTurn = CurrentPlayersTurn == PlayerId.Player1 ? PlayerId.Player2 : PlayerId.Player1,
             };
@@ -231,19 +129,21 @@ namespace mcts
             {
                 nextState.skips += 1;
             }
+            else 
+            {
+                nextState.skips = 0;
+            }
             if (CurrentPlayersTurn == PlayerId.Player1)
             {
                 ulong captures = Captures(player1Pieces, player2Pieces, location);
                 nextState.player1Pieces |= captures | location;
-                nextState.player2Pieces ^= captures;
-                nextState.skips = 0;
+                nextState.player2Pieces &= ~captures;
             }
             else
             {
                 ulong captures = Captures(player2Pieces, player1Pieces, location);
                 nextState.player2Pieces |= captures | location;
-                nextState.player1Pieces ^= captures;
-                nextState.skips = 0;
+                nextState.player1Pieces &= ~captures;
             }
             return nextState;
         }
@@ -284,9 +184,9 @@ namespace mcts
         // it's not safe to cache the hash code, but we're going to anyway or this is going to be really slow
         public override int GetHashCode()
         {
-            var hashCode = player1Pieces.GetHashCode() * 4133;
-            hashCode ^= player2Pieces.GetHashCode() * 9697;
-            hashCode ^= skips.GetHashCode() * 21317;
+            var hashCode = (player1Pieces.GetHashCode() + 23) * 4133;
+            hashCode ^= (player2Pieces.GetHashCode() + 43) * 9697;
+            hashCode ^= (skips.GetHashCode() + 71) * 21317;
             return hashCode;
         }
 

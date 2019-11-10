@@ -18,7 +18,7 @@ namespace mcts
             var stopwatch = Stopwatch.StartNew();
             for(long i = 0; ; i++)
             {
-                if (i % 1000 == 0)
+                if (i % 10 == 0)
                 {
                     if (stopwatch.ElapsedMilliseconds > millisecondsToMove) break;
                 }
@@ -32,7 +32,7 @@ namespace mcts
             foreach(var successor in successors)
             {
                 var stats = tree.states[successor];
-                Console.WriteLine($"{successor.GetHashCode()}: {stats.Wins}, {stats.SimiulationsCount}\n     {stats.UpperConfidenceBoundScore(currentSimulations)}, {stats.PureMonteCarloScore}");
+                Console.WriteLine($"{successor.DescribeLastMove()}: {stats.Wins}, {stats.SimiulationsCount}\n     {stats.UpperConfidenceBoundScore(currentSimulations)}, {stats.PureMonteCarloScore}");
                 if (stats.SimiulationsCount > mostSimulations)
                 {
                     bestScoreStates.Clear();
