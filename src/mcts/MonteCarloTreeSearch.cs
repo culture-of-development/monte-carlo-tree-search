@@ -18,7 +18,7 @@ namespace mcts
             var stopwatch = Stopwatch.StartNew();
             for(long i = 0; ; i++)
             {
-                if (i % 10 == 0)
+                if (i % 100 == 0)
                 {
                     if (stopwatch.ElapsedMilliseconds > millisecondsToMove) break;
                 }

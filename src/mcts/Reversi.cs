@@ -48,7 +48,6 @@ namespace mcts
 
         public ulong GetValidMoves()
         {
-            ulong openCells = ~(player1Pieces | player2Pieces);
             ulong validMoves = 0ul;
             ulong currentLocation = 1ul;
             while(currentLocation > 0)
@@ -67,6 +66,8 @@ namespace mcts
             // TODO: consider that it is valid to skip when no move is possible
             // can you quickly check when no move is possible?
             // dont have to worry about this if we never pass zero into here
+            ulong openCells = ~(player1Pieces | player2Pieces);
+            if (!HasFlags(openCells, location)) return false;
             ulong currentPlayerPieces = CurrentPlayersTurn == PlayerId.Player1 ? player1Pieces : player2Pieces;
             ulong opponentPlayerPieces = CurrentPlayersTurn == PlayerId.Player1 ? player2Pieces : player1Pieces;
             ulong captures = Captures(currentPlayerPieces, opponentPlayerPieces, location);
