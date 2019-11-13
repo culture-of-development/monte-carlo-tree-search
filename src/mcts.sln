@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29403.142
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mcts", "mcts\mcts.csproj", "{C15A1A02-4496-4ED4-94C1-1F95C7E1F4C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mcts", "mcts\mcts.csproj", "{C15A1A02-4496-4ED4-94C1-1F95C7E1F4C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OthelloBlazor", "OthelloBlazor\OthelloBlazor.csproj", "{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,9 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C15A1A02-4496-4ED4-94C1-1F95C7E1F4C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -30,5 +29,23 @@ Global
 		{C15A1A02-4496-4ED4-94C1-1F95C7E1F4C0}.Release|x64.Build.0 = Release|Any CPU
 		{C15A1A02-4496-4ED4-94C1-1F95C7E1F4C0}.Release|x86.ActiveCfg = Release|Any CPU
 		{C15A1A02-4496-4ED4-94C1-1F95C7E1F4C0}.Release|x86.Build.0 = Release|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Debug|x64.Build.0 = Debug|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Debug|x86.Build.0 = Debug|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Release|x64.ActiveCfg = Release|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Release|x64.Build.0 = Release|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Release|x86.ActiveCfg = Release|Any CPU
+		{9038638C-7FCA-415A-9BD5-EEE7C0875A8B}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {532C9E98-7318-4214-8F7D-F9AE2BCE71D2}
 	EndGlobalSection
 EndGlobal
