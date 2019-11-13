@@ -142,9 +142,9 @@ namespace mcts
 
             static readonly double c = Math.Sqrt(2);
 
-            public double PureMonteCarloScore => SimiulationsCount == 0 ? 1d : Wins / SimiulationsCount;
+            public double PureMonteCarloScore => SimiulationsCount == 0 ? double.PositiveInfinity : Wins / SimiulationsCount;
             public double UpperConfidenceBoundScore(double parentSimulations) => 
-                SimiulationsCount == 0 ? 1d :
+                SimiulationsCount == 0 ? double.PositiveInfinity :
                 PureMonteCarloScore + c * Math.Sqrt(Math.Log(parentSimulations) / SimiulationsCount);
         }
     }

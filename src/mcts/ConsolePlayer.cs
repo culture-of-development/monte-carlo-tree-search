@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace mcts
 {
@@ -11,26 +12,18 @@ namespace mcts
 
         public IGame MakeMove(IGame currentState, IGame[] successors)
         {
-            Console.WriteLine("Please select a successor:");
-            for(int i = 0; i < successors.Length; i++)
-            {
-                Console.WriteLine($"{i}: ({successors[i].DescribeLastMove()})");
-            }
-            int selection = -1;
-            while(selection < 0 || selection >= successors.Length)
+            if (successors[0].DescribeLastMove() == "64") return successors[0];
+            var options = successors.ToDictionary(m => m.DescribeLastMove());
+            while(true)
             {
                 Console.Write("Please enter your selection: ");
                 var input = Console.ReadLine();
-                try
-                {
-                    selection = int.Parse(input);
-                }
-                catch {} // try again
+                if (options.ContainsKey(input)) return options[input];
+                Console.Write("Negative... ");
             }
-            return successors[selection];
         }
 
-        public static string GetBoardRepresentation(TicTacToe state)
+        public static void GetBoardRepresentation(TicTacToe state, System.IO.TextWriter writer)
         {
             Dictionary<PlayerId, string> rep = new Dictionary<PlayerId, string>()
             {
@@ -39,21 +32,19 @@ namespace mcts
                 { PlayerId.Player2, "O" },
             };
             var board = state.GetBoard();
-            string result = "";
             for(int i = 0; i < 3; i++)
             {
-                result += rep[board[i * 3]];
+                writer.Write(rep[board[i * 3]]);
                 for(int j = 1; j < 3; j++)
                 {
-                    result += "|" + rep[board[i * 3 + j]];
+                    writer.Write("|" + rep[board[i * 3 + j]]);
                 }
-                result += "\n";
-                if (i < 2) result += "-+-+-\n";
+                writer.WriteLine();
+                if (i < 2) writer.WriteLine("-+-+-");
             }
-            return result;
         }
 
-        public static string GetBoardRepresentation(Reversi state)
+        public static void GetBoardRepresentation(Reversi state, System.IO.TextWriter writer)
         {
             Dictionary<PlayerId, string> rep = new Dictionary<PlayerId, string>()
             {
@@ -61,27 +52,39 @@ namespace mcts
                 { PlayerId.Player1, " X" },
                 { PlayerId.Player2, " O" },
             };
+            Console.ForegroundColor = ConsoleColor.White;
             var board = state.GetBoard();
-            string result = "";
             for(int i = 0; i < 8; i++)
             {
                 var player = board[i * 8];
-                if (player == PlayerId.None)
-                    result += (i * 8).ToString().PadLeft(2);
-                else
-                    result += rep[board[i * 8]];
-                for(int j = 1; j < 8; j++)
+                for(int j = 0; j < 8; j++)
                 {
                     player = board[i * 8 + j];
-                    if (player == PlayerId.None)
-                        result += "|" + (i * 8 + j).ToString().PadLeft(2);
-                    else
-                        result += "|" + rep[board[i * 8 + j]];
+                    if (j > 0) {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        writer.Write("|");
+                    }
+                    if (player == PlayerId.None) {
+                        if (state.IsValidMove(1ul << (i*8+j))) {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            writer.Write((i * 8 + j).ToString().PadLeft(2));
+                        }
+                        else {
+                            writer.Write("  ");
+                        }
+                    } else {
+                        var cellPlayer = board[i * 8 + j];
+                        Console.ForegroundColor = cellPlayer == PlayerId.Player1 ? ConsoleColor.Red : ConsoleColor.Blue;
+                        writer.Write(rep[cellPlayer]);
+                    }
                 }
-                result += "\n";
-                if (i < 7) result += "--+--+--+--+--+--+--+--\n";
+                writer.WriteLine();
+                if (i < 7) {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    writer.WriteLine("--+--+--+--+--+--+--+--");
+                }
             }
-            return result;
+            Console.ResetColor();
         }
     }
 }

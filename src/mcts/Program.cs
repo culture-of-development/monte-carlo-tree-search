@@ -87,13 +87,14 @@ namespace mcts
             PlayerId winner;
             while(!state.IsTerminal(out winner))
             {
-                Console.WriteLine($"Current State");
-                Console.WriteLine(ConsolePlayer.GetBoardRepresentation((dynamic)state));
+                ConsolePlayer.GetBoardRepresentation((dynamic)state, Console.Out);
                 var currentPlayer = playerLookup[state.CurrentPlayersTurn];
                 state = currentPlayer.MakeMove(state, state.ExpandSuccessors());
+                Console.WriteLine(currentPlayer.Name + " selected " + state.DescribeLastMove() + ".");
+                Console.WriteLine();
             }
             Console.WriteLine("THE GAME IS OVER!");
-            Console.WriteLine(ConsolePlayer.GetBoardRepresentation((dynamic)state));
+            ConsolePlayer.GetBoardRepresentation((dynamic)state, Console.Out);
             if (winner == PlayerId.None)
             {
                 Console.WriteLine("THE GAME WAS A TIE!");
