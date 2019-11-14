@@ -187,3 +187,43 @@ app {
     #game > .cell[data-player][data-valid-move="True"]:hover::before {
         background-color: #CCC;
     }
+
+#score {
+    width: 200px;
+    height: 100px;
+}
+
+#score > div {
+    height: 100px;
+    width: 100px;
+    box-sizing: border-box;
+    float: left;
+    font-size: 70px;
+    line-height: 100px;
+    text-align: center;
+    border: 1px solid black;
+    color: white;
+}
+
+#score > div.player1 {
+    background-color: red;
+}
+#score > div.player2 {
+    background-color: blue;
+}
+
+#winner {
+        height: 150px;
+        font-size: 50px;
+        line-height: 130px;
+        z-index: 1;
+        padding: 5px 30px;
+        background-color: lightblue;
+        text-align: center;
+        display: inline-block;
+        border: 5px solid deepskyblue;
+        border-radius: 30px;
+        position: absolute;
+        top: 242px;
+        left: 393px;
+}

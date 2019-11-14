@@ -4,6 +4,24 @@
 
 <h3>Othello</h3>
 
+@if (gameCompleted) 
+{
+    <div id="winner">
+        @if (winner == PlayerId.None)
+        {
+            <span>The game was a tie!</span>
+        }
+        else
+        {
+            <span>@winner.ToString() won the game!</span>
+        }
+    </div>
+}
+<div id="score" class="float-right">
+    <div class="player1">@GetScore(PlayerId.Player1)</div>
+    <div class="player2">@GetScore(PlayerId.Player2)</div>
+</div>
+
 <div id="game">
     @for (int i = 0; i < 64; i++)
     {
@@ -13,27 +31,42 @@
 </div>
 
 @code {
-    Othello game = new Othello();
+    Othello game;
     PlayerId[] cells;
     mcts.MonteCarloTreeSearchPlayer ai = new MonteCarloTreeSearchPlayer(1000);
+    bool gameCompleted = false;
+    PlayerId winner;
 
     protected override async Task OnInitializedAsync()
     {
-        await Prerender();
+        await Prerender(new Othello());
     }
 
-    async Task Prerender()
+    async Task Prerender(Othello move)
     {
+        game = move;
+        // auto skip
+        while (!game.IsTerminal(out winner))
+        {
+            var nextSuccessor = game.ExpandSuccessors()[0];
+            if (nextSuccessor.DescribeLastMove() == "64") {
+                game = (Othello)nextSuccessor;
+            } else {
+                break;
+            }
+        }
         cells = game.GetBoard();
         try
         {
             await jsRuntime.InvokeAsync<string>("console.log", game.LastPlayersTurn + ": valid move selected: " + game.DescribeLastMove());
         }
-        catch
-        {
-            // who cares, we're just logging some stuff
-        }
+        catch { /* who cares, we're just logging some stuff */ }
+        // terminal?
+        gameCompleted = game.IsTerminal(out winner);
         StateHasChanged();
+        if (game.CurrentPlayersTurn == PlayerId.Player2) {
+            await AiMove();
+        }
     }
 
     string GetPlayer(int i)
@@ -52,8 +85,6 @@
         if (game.CurrentPlayersTurn == PlayerId.Player1 && game.IsValidMove(move))
         {
             await HumanMove(move);
-            await AiMove();
-            // TODO: need to skip players turns when they cannot go
         }
         else
         {
@@ -63,13 +94,18 @@
 
     async Task HumanMove(ulong move)
     {
-        game = game.ApplyMove(move);
-        await Prerender();
+        var next = game.ApplyMove(move);
+        await Prerender(next);
     }
 
     async Task AiMove()
     {
-        game = (Othello)ai.MakeMove(game, game.ExpandSuccessors());
-        await Prerender();
+        var next = (Othello)ai.MakeMove(game, game.ExpandSuccessors());
+        await Prerender(next);
+    }
+
+    int GetScore(PlayerId player)
+    {
+        return cells.Count(m => m == player);
     }
 }
