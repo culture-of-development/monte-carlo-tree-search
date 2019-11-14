@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace mcts
 {
-    public class ReversiTests
+    public class OthelloTests
     {
         public void RunTests()
         {
@@ -27,7 +27,7 @@ namespace mcts
 
             const ulong noCaptures = 0ul;
 
-            var state = new Reversi();
+            var state = new Othello();
             var captures = state.Captures(state.player1Pieces, state.player2Pieces, 1ul << 19);
             if (captures != noCaptures) throw new Exception("expected no captures, got " + string.Join(", ", GetLocations(captures)));
 

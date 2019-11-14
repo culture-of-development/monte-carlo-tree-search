@@ -1,8 +1,8 @@
-﻿@page "/reversi"
+﻿@page "/othello"
 @inject IJSRuntime jsRuntime
 @using mcts
 
-<h3>Reversi</h3>
+<h3>Othello</h3>
 
 <div id="game">
     @for (int i = 0; i < 64; i++)
@@ -13,7 +13,7 @@
 </div>
 
 @code {
-    mcts.Reversi game = new mcts.Reversi();
+    Othello game = new Othello();
     PlayerId[] cells;
     mcts.MonteCarloTreeSearchPlayer ai = new MonteCarloTreeSearchPlayer(1000);
 
@@ -31,7 +31,7 @@
         }
         catch
         {
-            // who cares
+            // who cares, we're just logging some stuff
         }
         StateHasChanged();
     }
@@ -69,7 +69,7 @@
 
     async Task AiMove()
     {
-        game = (mcts.Reversi)ai.MakeMove(game, game.ExpandSuccessors());
+        game = (Othello)ai.MakeMove(game, game.ExpandSuccessors());
         await Prerender();
     }
 }

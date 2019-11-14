@@ -44,7 +44,7 @@ namespace mcts
             }
         }
 
-        public static void GetBoardRepresentation(Reversi state, System.IO.TextWriter writer)
+        public static void GetBoardRepresentation(Othello state, System.IO.TextWriter writer)
         {
             Dictionary<PlayerId, string> rep = new Dictionary<PlayerId, string>()
             {

@@ -75,7 +75,7 @@ namespace mcts
 
         static void PlayGame()
         {
-            IGame state = new Reversi();
+            IGame state = new Othello();
             var player1 = new ConsolePlayer() { Name = "Player 1" };
             //var player1 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 1" };
             var player2 = new MonteCarloTreeSearchPlayer(1000) { Name = "Player 2" };

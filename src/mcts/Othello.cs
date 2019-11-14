@@ -5,11 +5,12 @@ using System.Runtime.CompilerServices;
 
 namespace mcts
 {
-    // reversi is played on an 8x8 board so there are 64 locations
+    // Othello is played on an 8x8 board so there are 64 locations
+    // each player starts with 2 pieces already place in the center of the board
     // we're going to store a player's pieces as an unsigned long (64 bits)
     // we track the number of skipped moves with a short
 
-    public class Reversi : IGame
+    public class Othello : IGame
     {
         public ulong player1Pieces;
         public ulong player2Pieces;
@@ -20,7 +21,7 @@ namespace mcts
         public PlayerId CurrentPlayersTurn { get; private set; }
         public PlayerId LastPlayersTurn { get; private set; }
 
-        public Reversi()
+        public Othello()
         {
             player1Pieces = (1ul << 27) | (1ul << 36);
             player2Pieces = (1ul << 28) | (1ul << 35);
@@ -115,9 +116,9 @@ namespace mcts
             return HasFlags(currentPieces, current) ? visited : 0ul;
         }
 
-        public Reversi ApplyMove(ulong location)
+        public Othello ApplyMove(ulong location)
         {
-            var nextState = new Reversi
+            var nextState = new Othello
             {
                 player1Pieces = player1Pieces,
                 player2Pieces = player2Pieces,
@@ -195,19 +196,19 @@ namespace mcts
         {
             if (object.ReferenceEquals(obj, null)) return false;
             if (object.ReferenceEquals(obj, this)) return true;
-            var actual = (Reversi)obj;
+            var actual = (Othello)obj;
             return this.player1Pieces == actual.player1Pieces 
                 && this.player2Pieces == actual.player2Pieces 
                 && this.skips == actual.skips;
         }
 
-        public static bool operator ==(Reversi a, Reversi b)
+        public static bool operator ==(Othello a, Othello b)
         {
             if (object.ReferenceEquals(a, null)) return false;
             return a.Equals(b);
         }
 
-        public static bool operator !=(Reversi a, Reversi b)
+        public static bool operator !=(Othello a, Othello b)
         {
             if (object.ReferenceEquals(a, null)) return false;
             return !a.Equals(b);
