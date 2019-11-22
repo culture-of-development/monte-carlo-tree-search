@@ -6,34 +6,50 @@
 
 @if (gameCompleted) 
 {
-    <div id="winner">
+    <div id="winner" data-player="@winner.ToString()">
         @if (winner == PlayerId.None)
         {
             <span>The game was a tie!</span>
         }
         else
         {
-            <span>@winner.ToString() won the game!</span>
+            string winnerName = winner == PlayerId.Player1 ? "RED" : "BLUE";
+            <span>@winnerName won the game!</span>
         }
+        <small>Refresh the page to play again.</small>
     </div>
 }
-<div id="score" class="float-right">
-    <div class="player1">@GetScore(PlayerId.Player1)</div>
-    <div class="player2">@GetScore(PlayerId.Player2)</div>
+<div  class="float-right">
+    <div id="score">
+        <div class="player1">@GetScore(PlayerId.Player1)</div>
+        <div class="player2">@GetScore(PlayerId.Player2)</div>
+    </div>
+    <button @onclick="HandleHelpMe">HELP ME!</button>
+    <h3>AI Estimates</h3>
+    <div>Total Sims: @aiSimulations</div>
+    <ul id="estimates">
+        @foreach(var (move, score) in aiValues)
+        {
+            <li><em>@move</em>: @score.ToString("0.0000")</li>
+        }
+    </ul>
 </div>
 
 <div id="game">
     @for (int i = 0; i < 64; i++)
     {
         int j = i;
-        <div id="@i" class="cell" data-player="@GetPlayer(i)" data-valid-move="@GetIsValidMove(i)" @onclick="@((args) => MakeMove(j))"></div>
+        <div id="@i" class="cell" title="@i" style="background-color:@GetBgScore(i)" data-player="@GetPlayer(i)" data-valid-move="@GetIsValidMove(i)" @onclick="@((args) => MakeMove(j))"></div>
     }
 </div>
 
 @code {
     Othello game;
     PlayerId[] cells;
-    mcts.MonteCarloTreeSearchPlayer ai = new MonteCarloTreeSearchPlayer(1000);
+    Dictionary<string, double> aiValues = new Dictionary<string, double>();
+    Dictionary<int, double> helpValues = new Dictionary<int, double>();
+    long aiSimulations = 0;
+    const int millisecondsPerMove = 1000;
     bool gameCompleted = false;
     PlayerId winner;
 
@@ -56,6 +72,7 @@
             }
         }
         cells = game.GetBoard();
+        helpValues.Clear();
         try
         {
             await jsRuntime.InvokeAsync<string>("console.log", game.LastPlayersTurn + ": valid move selected: " + game.DescribeLastMove());
@@ -100,8 +117,29 @@
 
     async Task AiMove()
     {
-        var next = (Othello)ai.MakeMove(game, game.ExpandSuccessors());
-        await Prerender(next);
+        var (next, estimates, totalSimulations) = mcts.MonteCarloTreeSearch.Search(game, millisecondsPerMove);
+        aiSimulations = totalSimulations;
+        aiValues = estimates.ToDictionary(m => m.Key, m => m.Value.PureMonteCarloScore);
+        await Prerender((Othello)next);
+    }
+
+    async Task HandleHelpMe()
+    {
+        await jsRuntime.InvokeAsync<string>("console.log", "attempting to help");
+        var (next, estimates, totalSimulations) = mcts.MonteCarloTreeSearch.Search(game, millisecondsPerMove);
+        helpValues = estimates.ToDictionary(m => Convert.ToInt32(m.Key), m => m.Value.PureMonteCarloScore);
+        await jsRuntime.InvokeAsync<string>("console.log", "attempting to help: " + helpValues.First().ToString());
+        StateHasChanged();
+    }
+
+    string GetBgScore(int i)
+    {
+        if (!helpValues.ContainsKey(i)) return "rgba(0,0,0,0)";
+        double estimate = helpValues[i];
+        if (estimate > 0.5) {
+            return $"rgba(255,0,0,{(estimate-0.5)/0.5})";
+        }
+        return $"rgba(0,0,255,{(0.5-estimate)/0.5})";
     }
 
     int GetScore(PlayerId player)

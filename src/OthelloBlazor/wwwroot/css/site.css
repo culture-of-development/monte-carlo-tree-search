@@ -2,6 +2,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 1.3rem;
 }
 
 a, .btn-link {
@@ -174,7 +175,6 @@ app {
     top: 15px;
     left: 15px;
 }
-
     #game > .cell[data-player="Player1"]::before {
         background-color: red;
     }
@@ -191,6 +191,7 @@ app {
 #score {
     width: 200px;
     height: 100px;
+    margin-bottom: 2em;
 }
 
 #score > div {
@@ -213,7 +214,6 @@ app {
 }
 
 #winner {
-        height: 150px;
         font-size: 50px;
         line-height: 130px;
         z-index: 1;
@@ -224,6 +224,13 @@ app {
         border: 5px solid deepskyblue;
         border-radius: 30px;
         position: absolute;
-        top: 242px;
-        left: 393px;
+        top: 400px;
+        left: 395px;
+}
+
+#winner small {
+    display: block;
+    font-size: 0.4em;
+    line-height: 1em;
+    padding: 1em;
 }
