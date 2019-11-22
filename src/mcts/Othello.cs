@@ -130,11 +130,10 @@ namespace mcts
             if (location == skipMoveLocation)
             {
                 nextState.skips += 1;
+                return nextState;
             }
-            else 
-            {
-                nextState.skips = 0;
-            }
+            
+            nextState.skips = 0;
             if (CurrentPlayersTurn == PlayerId.Player1)
             {
                 ulong captures = Captures(player1Pieces, player2Pieces, location);

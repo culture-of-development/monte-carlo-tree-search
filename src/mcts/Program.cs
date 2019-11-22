@@ -9,8 +9,8 @@ namespace mcts
         {
             //DebuggingTests();
             //IsTerminalTests();
-            //new ReversiTests().RunTests();
-            PlayGame();
+            new OthelloTests().RunTests();
+            //PlayGame();
         }
 
         static void DebuggingTests()
