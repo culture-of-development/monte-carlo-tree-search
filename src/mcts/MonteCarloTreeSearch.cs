@@ -11,14 +11,13 @@ namespace mcts
         private static Random random = new Random();
 
         // NOTE: assumes IGame is immutable
-        // TODO: alternatively pass in an allotment of time instead of number of simulations
-        public static IGame Search(IGame current, int millisecondsToMove)
+        public static (IGame, IDictionary<string, StateStats>, long) Search(IGame current, int millisecondsToMove)
         {
             var tree = new TreeSearch(current);
             var stopwatch = Stopwatch.StartNew();
             for(long i = 0; ; i++)
             {
-                if (i % 100 == 0)
+                if (i % 10 == 0)
                 {
                     if (stopwatch.ElapsedMilliseconds > millisecondsToMove) break;
                 }
@@ -27,12 +26,12 @@ namespace mcts
             var successors = current.ExpandSuccessors();
             double mostSimulations = -1d;
             double currentSimulations = tree.states[current].SimiulationsCount;
-            Console.WriteLine("currentSimulations: " + currentSimulations);
+            Dictionary<string, StateStats> estimates = new Dictionary<string, StateStats>();
             var bestScoreStates = new List<IGame>();
             foreach(var successor in successors)
             {
                 var stats = tree.states[successor];
-                Console.WriteLine($"{successor.DescribeLastMove()}: {stats.Wins}, {stats.SimiulationsCount}\n     {stats.UpperConfidenceBoundScore(currentSimulations)}, {stats.PureMonteCarloScore}");
+                estimates.Add(successor.DescribeLastMove(), stats);
                 if (stats.SimiulationsCount > mostSimulations)
                 {
                     bestScoreStates.Clear();
@@ -45,7 +44,7 @@ namespace mcts
                 }
             }
             var nextMove = bestScoreStates[random.Next(bestScoreStates.Count)];
-            return nextMove;
+            return (nextMove, estimates, (long)currentSimulations);
         }
 
         private class TreeSearch
@@ -135,7 +134,7 @@ namespace mcts
             }
         }
 
-        private class StateStats
+        public class StateStats
         {
             public double SimiulationsCount { get; set; }
             public double Wins { get; set; }
