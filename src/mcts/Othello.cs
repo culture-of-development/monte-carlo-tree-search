@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 
 
@@ -16,7 +15,7 @@ namespace mcts
         public ulong player2Pieces;
         public short skips;
         public ulong lastMove = 0ul;
-        public string DescribeLastMove() => BitOperations.TrailingZeroCount(lastMove).ToString();
+        public string DescribeLastMove() => BitTwiddling.TrailingZeroCount(lastMove).ToString();
 
         public PlayerId CurrentPlayersTurn { get; private set; }
         public PlayerId LastPlayersTurn { get; private set; }
@@ -82,23 +81,25 @@ namespace mcts
             // as long as we continually encounter opponent pieces
             // we capture them all as long as the first non opponent piece contains a current player piece
             ulong captures = 0ul;
-            captures |= Look(currentPieces, opponentPieces, location, -1,  0); // up
-            captures |= Look(currentPieces, opponentPieces, location,  1,  0); // down
-            captures |= Look(currentPieces, opponentPieces, location,  0, -1); // left
-            captures |= Look(currentPieces, opponentPieces, location,  0,  1); // right
-            captures |= Look(currentPieces, opponentPieces, location, -1, -1); // up left
-            captures |= Look(currentPieces, opponentPieces, location, -1,  1); // up right
-            captures |= Look(currentPieces, opponentPieces, location,  1, -1); // down left
-            captures |= Look(currentPieces, opponentPieces, location,  1,  1); // down right
+            int loc_index = BitTwiddling.TrailingZeroCount(location);
+            int row = loc_index / 8;
+            int col = loc_index % 8;
+            captures |= Look(currentPieces, opponentPieces, row, col, -1,  0); // up
+            captures |= Look(currentPieces, opponentPieces, row, col,  1,  0); // down
+            captures |= Look(currentPieces, opponentPieces, row, col,  0, -1); // left
+            captures |= Look(currentPieces, opponentPieces, row, col,  0,  1); // right
+            captures |= Look(currentPieces, opponentPieces, row, col, -1, -1); // up left
+            captures |= Look(currentPieces, opponentPieces, row, col, -1,  1); // up right
+            captures |= Look(currentPieces, opponentPieces, row, col,  1, -1); // down left
+            captures |= Look(currentPieces, opponentPieces, row, col,  1,  1); // down right
             return captures;
         }
 
-        public ulong Look(ulong currentPieces, ulong opponentPieces, ulong location, int rowShift, int colShift)
+        public ulong Look(ulong currentPieces, ulong opponentPieces, int row, int col, int rowShift, int colShift)
         {
-            int loc_index = BitOperations.TrailingZeroCount(location);
-            int row = loc_index / 8 + rowShift;
+            row += rowShift;
             if (row < 0 || row >= 8) return 0ul;
-            int col = loc_index % 8 + colShift;
+            col += colShift;
             if (col < 0 || col >= 8) return 0ul;
             ulong current = 1ul << (row * 8 + col);
             ulong visited = 0;
@@ -154,8 +155,8 @@ namespace mcts
             winningPlayerNumber = PlayerId.None;
             if (skips >= 2)
             {
-                int player1Score = BitOperations.PopCount(player1Pieces);
-                int player2Score = BitOperations.PopCount(player2Pieces);
+                int player1Score = BitTwiddling.PopCount(player1Pieces);
+                int player2Score = BitTwiddling.PopCount(player2Pieces);
                 if (player1Score > player2Score) winningPlayerNumber = PlayerId.Player1;
                 if (player1Score < player2Score) winningPlayerNumber = PlayerId.Player2;
                 return true;

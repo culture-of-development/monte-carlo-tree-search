@@ -1,19 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace mcts
 {
-    public class OthelloTests
+    public class OthelloTests : Tests
     {
-        public void RunTests()
-        {
-            var tests = this.GetType().GetMethods().Where(m => m.Name.StartsWith("Test"));
-            foreach(var test in tests)
-            {
-                test.Invoke(this, null);
-            }
-        }
         public void TestCaptures()
         {
             //  0  1  2  3  4  5  6  7
